@@ -17,6 +17,7 @@ h1{
   grid-template-columns: 150px 1fr;
 }
 #grid ol{
+  font size: 20px;
   padding-left: 33px;
   border-right: 1px solid gray;
   margin:0;
