@@ -86,6 +86,7 @@ void insert_node(HTpointer* phead, HTentry* p, HTentry* new_node) {
 		p->next = new_node;
 	}
 }
+
 HTentry* search(HTentry* head, int x) {
 	HTentry* p; 
 	p = head; 
@@ -106,13 +107,19 @@ void fillin(int index, int num1) {
 		if (temp->count != count) {
 			entry->index = 0;
 			entry->count = count;
-			f=search(temp, flag);
-			f->next = entry;
+			f=search(HT[index], flag);
+			if (f == NULL) {
+				printf("비어있습니다.");
+			}else {
+				printf("%d\n", f->count);
+			}
 			entry->next = temp;
+			f->next = entry;
+			printf("여기까지는 정상\n");
 			printf("%d %d\n", temp->count,count);
 			temp = temp->next;
 			flag = temp->count;
-			count--;
+			count=flag-1;
 		}
 		else {
 			printf("%d %d\n", temp->count,count);
@@ -142,6 +149,7 @@ int main(void) {
 			break;
 		}
 	}
+
 	fillin(4, num1);
 	for (int i = 1; i <= num1; i++) {
 		HTentry* temp = malloc(sizeof(HTentry));
