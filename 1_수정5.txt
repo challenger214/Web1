@@ -109,22 +109,17 @@ void fillin(int index, int num1) {
 			printf("여기\n");
 			entry->index = 0;
 			entry->count = count;
-			if (temp->count == 1) {
-				temp->next = entry;
-				break;
-			}
-			else {
 				f = search(HT[index], flag);
 				printf("%d\n", f->count);
 				entry->next = temp;
 				f->next = entry;
 				printf("%d %d %d\n", temp->count, count, flag);
-				temp = temp->next;
+				if (temp->count != 1) {
+					temp = temp->next;
+				}
 				flag = temp->count;
 				count = flag;
-			}
-		}
-		else {
+		}else {
 			printf("%d %d\n", temp->count,count);
 			temp = temp->next;
 			flag = count;
@@ -137,7 +132,7 @@ void fillin(int index, int num1) {
 int main(void) {
 	//1871049 장진희
 	FILE* fp;
-	fp = fopen("c:\\Users\\betty\\graph2.txt", "r");
+	fp = fopen("c:\\Users\\betty\\graph1.txt", "r");
 	int num1 = 0, num2 = 0, n1, n2, n3, i = 0, j = 1, k = 1;
 
 	fscanf(fp, "%d ", &num1);
@@ -155,8 +150,7 @@ int main(void) {
 		}
 	}
 
-	fillin(1, num1);
-	fillin(4, num1);
+	fillin(2, num1);
 	for (int i = 1; i <= num1; i++) {
 		HTentry* temp = malloc(sizeof(HTentry));
 		temp = HT[i];
