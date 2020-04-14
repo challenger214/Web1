@@ -86,24 +86,38 @@ void insert_node(HTpointer* phead, HTentry* p, HTentry* new_node) {
 		p->next = new_node;
 	}
 }
+HTentry* search(HTentry* head, int x) {
+	HTentry* p; 
+	p = head; 
+	while (p != NULL) {
+		if (p->count == x) 
+			return p; // 탐색 성공 
+		p = p->next; 
+	} return p; // 탐색 실패일 경우 NULL 반환 
+}
 
 void fillin(int index, int num1) {
 	HTentry* temp = malloc(sizeof(HTentry));
 	HTentry* entry = malloc(sizeof(HTentry));
+	HTentry * f = malloc(sizeof(HTentry));
 	temp = HT[index];
-	for(int count = num1; count>2;count--){
+	int flag = num1;
+	for(int count = num1; count>0;count--){
 		if (temp->count != count) {
 			entry->index = 0;
 			entry->count = count;
-			entry->next = temp->next;
-			temp->next = entry;
+			f=search(temp, flag);
+			f->next = entry;
+			entry->next = temp;
 			printf("%d %d\n", temp->count,count);
-			temp = entry->next;
+			temp = temp->next;
+			flag = temp->count;
 			count--;
 		}
 		else {
 			printf("%d %d\n", temp->count,count);
 			temp = temp->next;
+			flag = count;
 		}
 	}
 }
@@ -128,7 +142,7 @@ int main(void) {
 			break;
 		}
 	}
-	fillin(1, num1);
+	fillin(4, num1);
 	for (int i = 1; i <= num1; i++) {
 		HTentry* temp = malloc(sizeof(HTentry));
 		temp = HT[i];
