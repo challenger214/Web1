@@ -103,28 +103,33 @@ void fillin(int index, int num1) {
 	HTentry * f = malloc(sizeof(HTentry));
 	temp = HT[index];
 	int flag = num1;
-	for(int count = num1; count>0;count--){
+	int count = num1;
+	while(count>0){
 		if (temp->count != count) {
+			printf("여기\n");
 			entry->index = 0;
 			entry->count = count;
-			f=search(HT[index], flag);
-			if (f == NULL) {
-				printf("비어있습니다.");
-			}else {
-				printf("%d\n", f->count);
+			if (temp->count == 1) {
+				temp->next = entry;
+				break;
 			}
-			entry->next = temp;
-			f->next = entry;
-			printf("여기까지는 정상\n");
-			printf("%d %d\n", temp->count,count);
-			temp = temp->next;
-			flag = temp->count;
-			count=flag-1;
+			else {
+				f = search(HT[index], flag);
+				printf("%d\n", f->count);
+				entry->next = temp;
+				f->next = entry;
+				printf("%d %d %d\n", temp->count, count, flag);
+				temp = temp->next;
+				flag = temp->count;
+				count = flag;
+			}
 		}
 		else {
 			printf("%d %d\n", temp->count,count);
 			temp = temp->next;
 			flag = count;
+			count--;
+			printf("여기까지 정상\n");
 		}
 	}
 }
@@ -150,6 +155,7 @@ int main(void) {
 		}
 	}
 
+	fillin(1, num1);
 	fillin(4, num1);
 	for (int i = 1; i <= num1; i++) {
 		HTentry* temp = malloc(sizeof(HTentry));
