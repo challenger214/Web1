@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <limits.h>
+
+#define MAX_VERTICES 5
+#define TRUE 1 
+#define FALSE 0 
+
+int distance[MAX_VERTICES];
+int found[MAX_VERTICES];
+
+int weight[MAX_VERTICES][MAX_VERTICES] = {
+	{0,5,15,9999,67},{4,0,1,99,9999},{9999,34,0,9999,77},{33,100,115,0,6},{10,20,14,70,0}
+};
+
+int choose(int distance[], int n, int found[]) {
+	int i, min, minpos;
+	min = INT_MAX;
+	minpos = -1;
+	for (i = 0; i < n; i++) 
+		if (distance[i] < min && !found[i]) { 
+			min = distance[i]; 
+			minpos = i; 
+		} return minpos;
+}
+
+void shortest_path(int start,int n) {
+	int i, u, w; 
+	for (i = 0; i < n; i++) {
+		distance[i] = weight[start][i];
+		found[i] = FALSE;
+	}
+	found[start] = TRUE;
+	distance[start] = 0;
+		u = choose(distance, n, found);
+		found[u] = TRUE;
+		for (w = 0; w < n; w++) {
+			if (!found[w]) {
+				if (distance[u] + weight[u][w] < distance[w]) {
+					distance[w] = distance[u] + weight[u][w];
+				}
+			}
+			printf("%d,  ", distance[w]);
+		}printf(")\n");
+}
+
+int main(void) {
+	//1871049 장진희
+
+	printf(" Adjacency matrix\n");
+	for (int i = 0; i < MAX_VERTICES; i++) {
+		printf("\t");
+		for (int j = 0; j < MAX_VERTICES; j++) {
+			printf("%d\t", weight[i][j]);
+		}printf("\n");
+	}
+	printf("\n");
+	for (int j = 0; j < MAX_VERTICES; j++) {
+		printf(" Shortest paths from v%d = (",j+1);
+		shortest_path(j, MAX_VERTICES);
+	}
+	return 0;
+}

@@ -1,0 +1,102 @@
+#include <stdio.h>
+#include <limits.h>
+
+#define MAX_VERTICES 100
+#define TRUE 1 
+#define FALSE 0 
+
+int distance[MAX_VERTICES];
+int found[MAX_VERTICES];
+
+typedef struct HTentry* HTpointer;
+typedef struct HTentry {
+	int index; //index of identifier in ST 
+	HTpointer next;  //pointer to next identifier 
+} HTentry;
+
+HTpointer HT[MAX_VERTICES];
+
+void init(HTpointer point) {
+	point->index = 0;
+	point->next = NULL;
+}
+
+int choose(int distance[], int n, int found[]) {
+	int i, min, minpos;
+	min = INT_MAX;
+	minpos = -1;
+	for (i = 0; i < n; i++) 
+		if (distance[i] < min && !found[i]) { 
+			min = distance[i]; 
+			minpos = i; 
+		} return minpos;
+}
+
+void shortest_path(int start,int n,int weight[MAX_VERTICES][MAX_VERTICES]) {
+	int i, u, w; 
+	for (i = 0; i < n; i++) {
+		distance[i] = weight[start][i];
+		found[i] = FALSE;
+	}
+	found[start] = TRUE;
+	distance[start] = 0;
+		u = choose(distance, n, found);
+		found[u] = TRUE;
+		for (w = 0; w < n; w++) {
+			if (!found[w]) {
+				if (distance[u] + weight[u][w] < distance[w]) {
+					distance[w] = distance[u] + weight[u][w];
+				}
+			}
+			printf("%d,  ", distance[w]);
+		}printf(")\n");
+}
+void insert(int index, int next, int weight) {
+	HTentry* entry = malloc(sizeof(HTentry));
+	entry->index = weight; 
+	entry->next = NULL;
+	if (HT[index] == NULL) {
+		HT[index] = entry;
+	}
+	else {
+
+	}
+}
+int main(void) {
+	//1871049 장진희
+	FILE* fp;
+	fp = fopen("c:\\Users\\betty\\graph1.txt", "r");
+	
+	int num1 = 0, num2 = 0, n1, n2, n3, i = 0, j=0,flag;
+	fscanf(fp, "%d ", &num1);
+	fscanf(fp, "%d ", &num2);
+
+	int weight[MAX_VERTICES][MAX_VERTICES] = { {0,4,11},{6,0,2},{3,9999,0} };
+	printf("\n");
+	while (1) {
+		fscanf(fp, "%d ", &n1);
+		fscanf(fp, "%d ", &n2);
+		fscanf(fp, "%d ", &n3);
+		insert(n1, n2, n3);
+		i += 1;
+		if (i == num2) {
+			break;
+		}
+	}
+	printf("%d", HT[1]->index);
+
+	printf("\n");
+	printf(" Adjacency matrix\n");
+	for (int i = 0; i < num1; i++) {
+		printf("\t");
+		for (int j = 0; j < num1; j++) {
+			printf("%d\t", j);
+		}printf("\n");
+	}
+	printf("\n");
+	for (int k = 0; k < num1; k++) {
+		printf(" Shortest paths from v%d = (",k+1);
+		shortest_path(k, num1,weight);
+	}
+	return 0;
+}
