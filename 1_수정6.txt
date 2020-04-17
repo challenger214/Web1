@@ -10,12 +10,6 @@
 int distance[MAX_VERTICES];
 int found[MAX_VERTICES];
 
-typedef struct Edge // 이음선을 나타내는 구조체
-{
-	int vertex[2]; // 시작점과 끝점
-	int cost;      // 이음선의 가중치
-}Edge;
-
 int choose(int distance[], int n, int found[]) {
 	int i, min, minpos;
 	min = INT_MAX;
@@ -26,7 +20,7 @@ int choose(int distance[], int n, int found[]) {
 			minpos = i;
 		} return minpos;
 }
-void shortest_path(int start, int n, int weight[MAX_VERTICES][MAX_VERTICES]) {
+void shortest_path(int start, int n, int **weight) {
 	int i, u, w;
 	for (i = 0; i < n; i++) {
 		distance[i] = weight[start][i];
@@ -101,42 +95,68 @@ void dijkstra(int n, int* W[], Edge F[])    // 다익스트라 알고리즘
 		num++;                      // repeat(n-1 times)를 위한 변수
 	}
 }*/
-
+int(**adj_matrix(FILE* fp, int n)) {
+	int** adj = malloc(sizeof(int**) * n); //2차원 배열 동적 할당 
+	int start, end, weight; //시작 정점, 끝 정점, 가중치
+	int flag = 0; //fscanf를 사용하기 위해 필요한 변수
+	for (int i = 1; i <= n; i++) {
+		adj[i] = (int*)malloc(sizeof(int*) * n);
+		for (int j = 1; j <= n; j++) {
+			if (flag == 0) {
+				fscanf(fp, "%d %d %d\n", &start, &end, &weight);
+				flag = 1;
+			}
+			if (i == j) {
+				adj[i][j] = 0;
+			}
+			else {
+				if (i == start && j == end) {
+					adj[i][j] = weight;
+					flag = 0;
+				}
+				else {
+					adj[i][j] = 9999;
+				}
+			}
+			printf("%d \t", adj[i][j]);
+		}
+		printf("\n");
+	}return adj;
+}
 int main(void) {
 	//1871049 장진희
 	FILE* fp;
 	fp = fopen("c:\\Users\\betty\\graph1.txt", "r");
 	int num1 = 0, num2 = 0, start, end, weight,flag = 0; 
-
+	
 	fscanf(fp, "%d ", &num1);
 	fscanf(fp, "%d ", &num2);
-	int** adj = malloc(sizeof(int**) * num1);
-	for (int i = 1; i <= num1; i++) { 
-		adj[i] = (int*)malloc(sizeof(int*) * num1); 
-		for (int j = 1; j <= num1; j++) { 
-			if (flag == 0) { 
+	printf("\n");
+	int** adj = malloc(sizeof(int**) * num1); 
+	for (int i = 1; i <= num1; i++) {
+		adj[i] = (int*)malloc(sizeof(int*) * num1);
+		for (int j = 1; j <= num1; j++) {
+			if (flag == 0) {
 				fscanf(fp, "%d %d %d\n", &start, &end, &weight);
-				flag = 1; 
+				flag = 1;
 			}
-			if (i == j) { 
-				adj[i][j] = 0; 
+			if (i == j) {
+				adj[i][j] = 0;
 			}
-			else { 
+			else {
 				if (i == start && j == end) {
-					adj[i][j] = weight; 
-					flag = 0; 
+					adj[i][j] = weight;
+					flag = 0;
 				}
 				else {
-					adj[i][j] = 9999; 
+					adj[i][j] = 9999;
 				}
 			}
-			printf("%d \t", adj[i][j]); 
+			printf("%d \t", adj[i][j]);
 		}
 		printf("\n");
 	}
-	int we[MAX_VERTICES][MAX_VERTICES] = { {0,4,11},{6,0,2},{3,9999,0} };
-	printf("\n");
-	shortest_path(3,num1,we);
+	shortest_path(1,num2,adj);
 
 	return 0;
 }
