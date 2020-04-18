@@ -20,7 +20,9 @@ int choose(int distance[], int n, int found[]) {
 			minpos = i;
 		} return minpos;
 }
-void shortest_path(int start, int n, int **weight) {
+void shortest_path(int start, int n, int **we) {
+	int** weight = malloc(sizeof(int**) * n); //2차원 배열 동적 할당 
+	weight = we;
 	int i, u, w;
 	for (i = 0; i < n; i++) {
 		distance[i] = weight[start][i];
@@ -156,7 +158,6 @@ int main(void) {
 		}
 		printf("\n");
 	}
-	shortest_path(1,num2,adj);
-
+	shortest_path(1, 3, adj);
 	return 0;
 }
