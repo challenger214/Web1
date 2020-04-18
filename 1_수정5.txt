@@ -1,42 +1,28 @@
 #include <stdio.h>
 #include <limits.h>
+#include <malloc.h>
+#include <stdlib.h>
 
 #define MAX_VERTICES 100
 #define TRUE 1 
 #define FALSE 0 
 
+
 int distance[MAX_VERTICES];
 int found[MAX_VERTICES];
-
-typedef struct HTentry* HTpointer;
-typedef struct HTentry {
-	int index;
-	int count;
-	HTpointer next;  
-} HTentry;
-
-HTpointer HT[MAX_VERTICES];
-
-void init(HTpointer point) {
-	point->index = 0;
-	point->count = 0;
-	point->next = NULL;
-}
-
 int choose(int distance[], int n, int found[]) {
 	int i, min, minpos;
 	min = INT_MAX;
 	minpos = -1;
-	for (i = 0; i < n; i++)
+	for (i = 1; i <= n; i++)
 		if (distance[i] < min && !found[i]) {
 			min = distance[i];
 			minpos = i;
 		} return minpos;
 }
-
-void shortest_path(int start, int n, int weight[MAX_VERTICES][MAX_VERTICES]) {
+void shortest_path(int start, int n, int* weight[]) {
 	int i, u, w;
-	for (i = 0; i < n; i++) {
+	for (i = 1; i <= n; i++) {
 		distance[i] = weight[start][i];
 		found[i] = FALSE;
 	}
@@ -44,138 +30,60 @@ void shortest_path(int start, int n, int weight[MAX_VERTICES][MAX_VERTICES]) {
 	distance[start] = 0;
 	u = choose(distance, n, found);
 	found[u] = TRUE;
-	for (w = 0; w < n; w++) {
+	for (w = 1; w <= n; w++) {
 		if (!found[w]) {
 			if (distance[u] + weight[u][w] < distance[w]) {
 				distance[w] = distance[u] + weight[u][w];
 			}
 		}
-		printf("%d,  ", distance[w]);
-	}printf(")\n");
-}
-
-void insert(int index, int count, int weight) {
-	HTentry* entry = malloc(sizeof(HTentry));
-	entry->index = weight;
-	entry->count = count;
-	entry->next = NULL;
-	if (HT[index] == NULL) {
-		HT[index] = entry;
-	}else {
-		HTentry* temp = malloc(sizeof(HTentry));
-		temp = HT[index];
-		while (temp->next != NULL) {
-			temp = temp->next;
+		printf("%d", distance[w]);
+		if (w != n) {
+			printf(", ");
 		}
-		entry->next = HT[index];
-		HT[index] = entry;
-	}
+	}printf(")\n");
+	
 }
+int main(){
+	FILE* fp;
+	fp = fopen("c:\\Users\\betty\\graph1.txt", "r");
+	int num1 = 0, num2 = 0, start, end, weight, flag = 0;
+	printf("Filename: %s\n", fp);
+	fscanf(fp, "%d", &num1);
+	fscanf(fp, "%d ", &num2);
+	int i;
 
-void insert_node(HTpointer* phead, HTentry* p, HTentry* new_node) {
-	if (*phead == NULL) { // 공백 리스트인 경우 
-		new_node->next = NULL;
-		*phead = new_node;
-	}
-	else if (p == NULL) { // p가 NULL이면 첫번째 노드로 삽입 
-		new_node->next = *phead;
-		*phead = new_node;
-	}
-	else { // p 다음에 삽입 
-		new_node->next = p->next;
-		p->next = new_node;
-	}
-}
-
-HTentry* search(HTentry* head, int x) {
-	HTentry* p; 
-	p = head; 
-	while (p != NULL) {
-		if (p->count == x) 
-			return p; // 탐색 성공 
-		p = p->next; 
-	} return p; // 탐색 실패일 경우 NULL 반환 
-}
-
-void fillin(int index, int num1) {
-	HTentry* temp = malloc(sizeof(HTentry));
-	HTentry* entry = malloc(sizeof(HTentry));
-	HTentry * f = malloc(sizeof(HTentry));
-	temp = HT[index];
-	int flag = num1;
-	int count = num1;
-	while(count>0){
-		if (temp->count != count) {
-			if (count == index) {
-				printf("%d %d %d\n", temp->count, count, flag);
-				entry->index = 0;
-				entry->count = count;
-				f = search(HT[index], flag);
-				printf("%d\n", f->count);
-				entry->next = temp;
-				f->next = entry;
-				flag = temp->count;
-				count = flag;
+	int** adj = malloc(sizeof(int**) * num1);
+	printf("\n");
+	printf("Adjacency matrix\n");
+	for (int i = 1; i <= num1; i++) {
+		adj[i] = (int*)malloc(sizeof(int*) * num1);
+		for (int j = 1; j <= num1; j++) {
+			printf("   ");
+			if (flag == 0) {
+				fscanf(fp, "%d %d %d\n", &start, &end, &weight);
+				flag = 1;
+			}
+			if (i == j) {
+				adj[i][j] = 0;
 			}
 			else {
-				printf("여기\n");
-				entry->index = 9999;
-				entry->count = count;
-				f = search(HT[index], flag);
-				printf("%d\n", f->count);
-				entry->next = temp;
-				f->next = entry;
-				printf("%d %d %d\n", temp->count, count, flag);
-				if (temp->count != 1) {
-					temp = temp->next;
+				if (i == start && j == end) {
+					adj[i][j] = weight;
+					flag = 0;
 				}
-				flag = temp->count;
-				count = flag;
+				else {
+					adj[i][j] = 9999;
+				}
 			}
-		}else {
-			printf("%d %d\n", temp->count,count);
-			temp = temp->next;
-			flag = count;
-			count--;
-			printf("여기까지 정상\n");
-		}
-	}
-}
-
-int main(void) {
-	//1871049 장진희
-	FILE* fp;
-	fp = fopen("c:\\Users\\betty\\graph2.txt", "r");
-	int num1 = 0, num2 = 0, n1, n2, n3, i = 0, j = 1, k = 1;
-
-	fscanf(fp, "%d ", &num1);
-	fscanf(fp, "%d ", &num2);
-	printf("\n");
-
-	while (1) {
-		fscanf(fp, "%d ", &n1);
-		fscanf(fp, "%d ", &n2);
-		fscanf(fp, "%d ", &n3);
-		insert(n1, n2, n3);
-		i += 1;
-		if (i == num2) {
-			break;
-		}
-	}
-
-	for (int i = 1; i <= num1; i++) {
-		HTentry* temp = malloc(sizeof(HTentry));
-		temp = HT[i];
-		if (temp->next == NULL) {
-			printf("%d (%d)\t", HT[i]->index,HT[i]->count);
-		}
-		else {
-			while (temp->next != NULL) {
-				printf("%d (%d)\t", temp->index,temp->count);
-				temp = temp->next;
-			}printf("%d (%d)\t", temp->index, temp->count);
+			printf("%d \t", adj[i][j]);
 		}
 		printf("\n");
+	}
+
+	printf("\n\n");
+	for (int k = 1; k <= num1; k++) {
+		printf(" Shortest paths from v%d = (", k);
+		shortest_path(k, num1, adj);
 	}
 	return 0;
 }
