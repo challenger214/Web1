@@ -1,15 +1,13 @@
 #include <stdio.h>
-#include <limits.h>
-#include <malloc.h>
 #include <stdlib.h>
 
 #define MAX_VERTICES 100
 #define TRUE 1 
 #define FALSE 0 
 
-
 int distance[MAX_VERTICES];
 int found[MAX_VERTICES];
+
 int choose(int distance[], int n, int found[]) {
 	int i, min, minpos;
 	min = INT_MAX;
@@ -50,35 +48,35 @@ int main(){
 	scanf_s("%s", fname, sizeof(fname));
 	fp = fopen(fname, "r");
 	printf("%s\n", fname);
-	int num1 = 0, num2 = 0, start, end, weight, flag = 0;
+	int num1 = 0, num2 = 0, flag = 0, s, e, w ;
 	fscanf(fp, "%d", &num1);
 	fscanf(fp, "%d ", &num2);
 	int i;
 
-	int** adj = malloc(sizeof(int**) * num1);
+	int** list = malloc(sizeof(int**) * num1);
 	printf("\n");
 	printf("Adjacency matrix\n");
 	for (int i = 1; i <= num1; i++) {
-		adj[i] = (int*)malloc(sizeof(int*) * num1);
+		list[i] = (int*)malloc(sizeof(int*) * num1);
 		for (int j = 1; j <= num1; j++) {
 			printf("   ");
 			if (flag == 0) {
-				fscanf(fp, "%d %d %d\n", &start, &end, &weight);
+				fscanf(fp, "%d %d %d\n", &s, &e, &w);
 				flag = 1;
 			}
 			if (i == j) {
-				adj[i][j] = 0;
+				list[i][j] = 0;
 			}
 			else {
-				if (i == start && j == end) {
-					adj[i][j] = weight;
+				if (i == s && j == e) {
+					list[i][j] = w;
 					flag = 0;
 				}
 				else {
-					adj[i][j] = 9999;
+					list[i][j] = 9999;
 				}
 			}
-			printf("%d \t", adj[i][j]);
+			printf("%d \t", list[i][j]);
 		}
 		printf("\n");
 	}
@@ -86,7 +84,7 @@ int main(){
 	printf("\n\n");
 	for (int k = 1; k <= num1; k++) {
 		printf(" Shortest paths from v%d = (", k);
-		shortest_path(k, num1, adj);
+		shortest_path(k, num1, list);
 	}
 	return 0;
 }
