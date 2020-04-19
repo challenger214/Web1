@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <limits.h>
+#include <malloc.h>
+#include <stdlib.h>
+
+#define MAX_VERTICES 100
+#define TRUE 1 
+#define FALSE 0 
+
+
+int distance[MAX_VERTICES];
+int found[MAX_VERTICES];
+int choose(int distance[], int n, int found[]) {
+	int i, min, minpos;
+	min = INT_MAX;
+	minpos = -1;
+	for (i = 1; i <= n; i++)
+		if (distance[i] < min && !found[i]) {
+			min = distance[i];
+			minpos = i;
+		} return minpos;
+}
+void shortest_path(int start, int n, int* weight[]) {
+	int i, u, w;
+	for (i = 1; i <= n; i++) {
+		distance[i] = weight[start][i];
+		found[i] = FALSE;
+	}
+	found[start] = TRUE;
+	distance[start] = 0;
+	u = choose(distance, n, found);
+	found[u] = TRUE;
+	for (w = 1; w <= n; w++) {
+		if (!found[w]) {
+			if (distance[u] + weight[u][w] < distance[w]) {
+				distance[w] = distance[u] + weight[u][w];
+			}
+		}
+		printf("%d", distance[w]);
+		if (w != n) {
+			printf(", ");
+		}
+	}printf(")\n");
+	
+}
+int main(){
+	FILE* fp;
+	char fname[200];
+	printf("파일 이름: ");
+	scanf_s("%s", fname, sizeof(fname));
+	fp = fopen(fname, "r");
+	printf("%s\n", fname);
+	int num1 = 0, num2 = 0, start, end, weight, flag = 0;
+	fscanf(fp, "%d", &num1);
+	fscanf(fp, "%d ", &num2);
+	int i;
+
+	int** adj = malloc(sizeof(int**) * num1);
+	printf("\n");
+	printf("Adjacency matrix\n");
+	for (int i = 1; i <= num1; i++) {
+		adj[i] = (int*)malloc(sizeof(int*) * num1);
+		for (int j = 1; j <= num1; j++) {
+			printf("   ");
+			if (flag == 0) {
+				fscanf(fp, "%d %d %d\n", &start, &end, &weight);
+				flag = 1;
+			}
+			if (i == j) {
+				adj[i][j] = 0;
+			}
+			else {
+				if (i == start && j == end) {
+					adj[i][j] = weight;
+					flag = 0;
+				}
+				else {
+					adj[i][j] = 9999;
+				}
+			}
+			printf("%d \t", adj[i][j]);
+		}
+		printf("\n");
+	}
+
+	printf("\n\n");
+	for (int k = 1; k <= num1; k++) {
+		printf(" Shortest paths from v%d = (", k);
+		shortest_path(k, num1, adj);
+	}
+	return 0;
+}
