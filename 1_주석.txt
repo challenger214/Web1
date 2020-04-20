@@ -1,0 +1,98 @@
+#include <stdio.h> //입출력 헤더 파일
+#include <stdlib.h> //표준 라이브러리
+
+#define MAX_VERTICES 100 //행렬의 최대 크기 지정
+#define TRUE 1 
+#define FALSE 0 
+
+int distance[MAX_VERTICES]; //가중치 배열
+int found[MAX_VERTICES]; //이미 찾은 최단거리 정점의 배열
+
+int choose(int distance[], int n, int found[]) {//최단거리 탐색 함수
+	//distance는 최소값을 찾을 리스트, n은 distance의 길이, found는 이미 최단거리에 포함된 정점의 리스트
+	int i, min, minpos; //최소값 저장을 위한 변수선언
+	min = INT_MAX; 
+	minpos = -1; //초기화
+	for (i = 1; i <= n; i++) //리스트 끝까지
+		if (distance[i] < min && !found[i]) { //만약 최소값보다 작은데 이미 포함된 정점이 아니라면
+			min = distance[i]; //최소값 변경
+			minpos = i; //최소값 위치 저장
+		} return minpos; //최소값 위치 return
+}
+void shortest_path(int start, int n, int* weight[]) { //최단거리 탐색함수2
+	int i, u, w; //for문을 위한 변수선언
+	for (i = 1; i <= n; i++) {//리스트 끝까지
+		distance[i] = weight[start][i]; //distance리스트에 정점v에 해당하는 가중치 담기
+		found[i] = FALSE; // found 리스트 초기화
+	}
+	found[start] = TRUE; //정점 v 본인은 포함시키기
+	distance[start] = 0; //본인의 거리 0으로 초기화
+
+	for (int i = 1; i < n - 1; i++) {
+		u = choose(distance, n, found);//choose 함수 호출
+		found[u] = TRUE; //최단거리의 정점 찾았다고 표시하기
+		for (w = 1; w <= n; w++) { //리스트 끝까지
+			if (!found[w]) { //만약 최단거리에 포함된 정점이 아니면
+				if (distance[u] + weight[u][w] < distance[w]) {
+					//현 정점까지의 거리와 그 정점에서 목표 정점까지 거리의 합이 최단거리보다 작으면
+					distance[w] = distance[u] + weight[u][w]; //최단거리 변경
+				}
+			}
+		}
+	}
+	for (int i = 1; i <= n; i++) {
+		printf("%d", distance[i]); //최단거리 출력
+		if (i != n) {
+			printf(", "); //마지막 전까지 , 출력
+		}
+	}
+	printf(")\n");  //출력이끝나면 괄호 닫기
+	
+}
+int main(){
+	//1871049 컴퓨터공학 장진희
+	FILE* fp; //파일이름 선언
+	char fname[200]; //파일명을 담을 변수
+	printf("파일 이름: "); 
+	scanf_s("%s", fname, sizeof(fname)); //파일명 입력 받기
+	fp = fopen(fname, "r"); //파일을 읽기 형식으로 불러오기
+	printf("%s\n", fname); //파일명 출력
+	int num1 = 0, num2 = 0, flag = 0, s, e, w; //변수 선언
+	fscanf(fp, "%d", &num1); //정점의 개수 입력 받음
+	fscanf(fp, "%d ", &num2); //파일 라인 값 입력 받음
+
+	int** list = malloc(sizeof(int**) * num1); //가중치 인접행렬 선언(2차원 배열)
+	printf("\n");
+	printf("Adjacency matrix\n"); 
+	for (int i = 1; i <= num1; i++) { //리스트 끝까지
+		list[i] = (int*)malloc(sizeof(int*) * num1); //한 행의 1차원 배열 선언
+		for (int j = 1; j <= num1; j++) { //리스트 끝까지
+			printf("   ");
+			if (flag == 0) { 
+				fscanf(fp, "%d %d %d\n", &s, &e, &w); //한 줄씩 입력 받기
+				flag = 1;
+			}
+			if (i == j) { //본인 정점이면
+				list[i][j] = 0; //0을 가중치로 list에 넣음
+			}
+			else {
+				if (i == s && j == e) { //입력받은 값의 위치와 list의 index가 일치하면
+					list[i][j] = w; //가중치를 list에 넣은다
+					flag = 0; //다시 입력 받기
+				}
+				else {
+					list[i][j] = 9999; //입력받은 값이 없으면 9999를 가중치로 입력
+				}
+			}
+			printf("%d \t", list[i][j]); //입력받은 리스트 출력
+		}
+		printf("\n");
+	}
+
+	printf("\n\n");
+	for (int k = 1; k <= num1; k++) { //리스트 끝까지
+		printf(" Shortest paths from v%d = (", k); 
+		shortest_path(k, num1, list); // 최단거리 찾는 함수 호출
+	}
+	return 0;
+}
