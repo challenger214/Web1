@@ -11,15 +11,17 @@
 
 void PrintError(ERRORtypes err) {
 	switch (err) {
-	case overst:
-		printf("OVERFLOW\n");
-		exit(0);
-		break;
 	case illsp:
-		for (int k = start; k < end+1; k++) {
-			printf("%c", ST[k]);
+		if (end - start == 1) {
+			printf("%c", ST[start]);
+			printf(" illegal characters\n");
 		}
-		printf(" illegal operators\n");
+		else {
+			for (int k = start; k < end; k++) {
+				printf("%c", ST[k]);
+			}
+			printf(" illegal ident\n");
+		}
 		//exit(0);
 		break;
 	case illid:
@@ -34,73 +36,37 @@ void PrintError(ERRORtypes err) {
 }
 
 void FindError() {
-	int i = 0, fflag = 0;
+	int i = 0, iflag = 0;
 	start = 0;
 	end = 0;
 	char input = yytext[i++];
+	ST[start] = input;
 
 	printf("%d\t\t***Error***\t\t\t", linecount);
 	while (1) {
-		if (end > STsize) {
-			end = start;
-			PrintError(overst);
-		}
-		if (fflag == 1) {
-			if (end == start) end--;
-			else {
-				ST[end] = '\0';
-				if (isdigit(ST[start])) {
-					PrintError(illid);
-					end = start - 1;
-				}
-				else {
-					if (end - start > 10) end = start + 10, ST[end] = '\0';
-					for (int j = start; j < end; j++) {
-						printf("%c", ST[j]);
-					}
-					start = end + 1;
-				}
+			if (isdigit(ST[0])) {
+				iflag = 2;
+				end++;
+				input = yytext[i++];
+				ST[end] = input;
 			}
-		}
-		else if (isalnum(input) || input == '_') {
-			ST[end] = input;
-			if (fflag == 1) {
-				ST[end] = '\0';
-				if (isdigit(ST[start])) {
-					PrintError(illid);
-					end = start - 1;
+			else if (isalnum(input) || input == '_') {
+				ST[end] = input;
+				if (end - start > 10) {
+					end = start + 10;
 				}
-				else {
-					if (end - start > 10) end = start + 10, ST[end] = '\0';
-					for (int j = start; j < end; j++) {
-						printf("%c", ST[j]);
-					}
-					start = end + 1;
-				}
+			}else {
+				ST[end] = input;
+				iflag = 1;
 			}
-		}
-		else { // illegal separator
-			/*
-			if(start!=end){
-				hashcode = ComputeHS(start, end);
-				ADDHT(hashcode, start, end);
-			}
-			PrintError(illsp);
-			ST[end] = '\0';
-			start = end + 1;
-			*/
-			ST[end] = input;
-			PrintError(illsp);
-			break;
-		}
-		end++;
-		if (fflag == 1) break;
-		//if (yytext[i + 1] == NULL) break;
-		input = yytext[i++];
-		if (i == strlen(yytext) + 1) {
-			input = ST[end - 1];
+			end++;
+			input = yytext[i++];
 			if (input == NULL) break;
-			if (isSeperator(input) || isalnum(input)) fflag = 1;
-		}
+	}
+	if (iflag == 1) {
+		PrintError(illsp);
+	}
+	else if (iflag == 2) {
+		PrintError(illid);
 	}
 }
